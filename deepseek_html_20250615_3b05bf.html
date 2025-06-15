@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ULTIMATE Мемогенератор 4.1</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            text-align: center;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #ffd166);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            color: #333;
+        }
+        h1 {
+            color: white;
+            text-shadow: 3px 3px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+        #meme-canvas {
+            display: block;
+            margin: 20px auto;
+            max-width: 100%;
+            border: 5px solid #000;
+            border-radius: 10px;
+            background: black;
+        }
+        .controls {
+            margin: 20px 0;
+        }
+        input, button, select, .slider-container {
+            margin: 10px;
+            padding: 10px 15px;
+            font-size: 16px;
+            border-radius: 10px;
+            border: 2px solid #000;
+            font-family: 'Comic Sans MS', cursive;
+        }
+        input {
+            width: 80%;
+            max-width: 300px;
+        }
+        button {
+            background: #ff6b6b;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: #ff4757;
+            transform: scale(1.05);
+        }
+        #save-btn {
+            background: #4ecdc4;
+        }
+        #save-btn:hover {
+            background: #2dbbb2;
+        }
+        #random-btn {
+            background: #ffd166;
+            color: #000;
+        }
+        #random-btn:hover {
+            background: #ffc233;
+        }
+        .file-upload {
+            position: relative;
+            display: inline-block;
+            margin: 10px;
+        }
+        .file-upload input[type="file"] {
+            display: none;
+        }
+        .file-upload-label {
+            padding: 10px 20px;
+            background: #ff6b6b;
+            color: white;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            border: 2px solid #000;
+            transition: all 0.3s;
+        }
+        .file-upload-label:hover {
+            background: #ff4757;
+        }
+        .slider-container {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: left;
+        }
+        .slider-container label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        input[type="range"] {
+            width: 100%;
+            height: 10px;
+            -webkit-appearance: none;
+            background: #ff6b6b;
+            border-radius: 5px;
+            outline: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #4ecdc4;
+            border: 2px solid #000;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .color-picker {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .color-picker input[type="color"] {
+            width: 50px;
+            height: 30px;
+            padding: 0;
+            border: 2px solid #000;
+            border-radius: 5px;
+        }
+        .templates {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin: 15px 0;
+        }
+        .template-btn {
+            background: #a55eea;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        .template-btn:hover {
+            background: #8854d0;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ULTIMATE МЕМОГЕНЕРАТОР 4.1</h1>
+        
+        <div class="file-upload">
+            <label for="image-upload" class="file-upload-label">Выбрать картинку</label>
+            <input type="file" id="image-upload" accept="image/*">
+        </div>
+        
+        <div class="controls">
+            <input type="text" id="top-text-input" placeholder="Верхний текст">
+            <input type="text" id="bottom-text-input" placeholder="Нижний текст">
+            
+            <div class="templates">
+                <button class="template-btn" onclick="setTemplate('ЧЕ ЗА ХУЙНЯ?', 'Я В ШОКЕ')">Шаблон 1</button>
+                <button class="template-btn" onclick="setTemplate('КОГДА НАКОНЕЦ', 'ПОНЯЛ КАК ЭТО РАБОТАЕТ')">Шаблон 2</button>
+                <button class="template-btn" onclick="setTemplate('АХУЕТЬ', 'НЕ ОЖИДАЛ')">Шаблон 3</button>
+                <button class="template-btn" onclick="setTemplate('ПИЗДЕЦ', 'ВСЁ ПРОПАЛО')">Шаблон 4</button>
+                <button class="template-btn" onclick="setTemplate('ЖДИ МЕНЯ...', 'Я ИДУ НАХУЙ')">Шаблон 5</button>
+            </div>
+            
+            <div class="slider-container">
+                <label for="font-size-slider">Размер текста: <span id="font-size-value">42px</span></label>
+                <input type="range" id="font-size-slider" min="20" max="80" value="42">
+            </div>
+            
+            <div class="slider-container">
+                <label for="outline-size-slider">Толщина обводки: <span id="outline-size-value">4px</span></label>
+                <input type="range" id="outline-size-slider" min="0" max="10" value="4">
+            </div>
+            
+            <div class="slider-container">
+                <label>Выбери шрифт:</label>
+                <select id="font-select">
+                    <option value="'Impact', sans-serif">Impact (классика)</option>
+                    <option value="'Comic Sans MS', cursive">Comic Sans (угар)</option>
+                    <option value="'Arial Black', sans-serif">Arial Black (жирный)</option>
+                    <option value="'Times New Roman', serif">Times New Roman (интеллигентный)</option>
+                    <option value="'Courier New', monospace">Courier New (программистский)</option>
+                    <option value="'Papyrus', fantasy">Papyrus (мистический)</option>
+                    <option value="'Brush Script MT', cursive">Brush Script (рукописный)</option>
+                    <option value="'Verdana', sans-serif">Verdana (читаемый)</option>
+                </select>
+            </div>
+            
+            <div class="slider-container">
+                <label>Цвет текста:</label>
+                <div class="color-picker">
+                    <input type="color" id="text-color" value="#ffffff">
+                    <span>Белый (по умолчанию)</span>
+                </div>
+            </div>
+            
+            <button onclick="generateMeme()">Создать мем</button>
+            <button id="random-btn" onclick="generateRandomMeme()">Рандомный мем</button>
+            <button id="save-btn" onclick="saveMeme()">Сохранить мем</button>
+        </div>
+        
+        <canvas id="meme-canvas" width="500" height="500"></canvas>
+    </div>
+
+    <script>
+        const imageUpload = document.getElementById('image-upload');
+        const canvas = document.getElementById('meme-canvas');
+        const ctx = canvas.getContext('2d');
+        const topTextInput = document.getElementById('top-text-input');
+        const bottomTextInput = document.getElementById('bottom-text-input');
+        const fontSizeSlider = document.getElementById('font-size-slider');
+        const fontSizeValue = document.getElementById('font-size-value');
+        const outlineSizeSlider = document.getElementById('outline-size-slider');
+        const outlineSizeValue = document.getElementById('outline-size-value');
+        const fontSelect = document.getElementById('font-select');
+        const textColorPicker = document.getElementById('text-color');
+
+        // Шаблоны текстов
+        const memeTemplates = [
+            { top: "ЧЕ ЗА ХУЙНЯ?", bottom: "Я В ШОКЕ" },
+            { top: "КОГДА НАКОНЕЦ", bottom: "ПОНЯЛ КАК ЭТО РАБОТАЕТ" },
+            { top: "АХУЕТЬ", bottom: "НЕ ОЖИДАЛ" },
+            { top: "ПИЗДЕЦ", bottom: "ВСЁ ПРОПАЛО" },
+            { top: "ЖДИ МЕНЯ...", bottom: "Я ИДУ НАХУЙ" },
+            { top: "ЭТО ШО,", bottom: "ПРИКОЛ?" },
+            { top: "ДА КАК ТАК-ТО?", bottom: "ОБЪЯСНИТЕ" },
+            { top: "НУ И ЧО?", bottom: "Я ДОЛЖЕН РЕАГИРОВАТЬ?" }
+        ];
+
+        // Текущее изображение
+        let currentImage = null;
+
+        // Загрузка картинки
+        imageUpload.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const img = new Image();
+                    img.onload = function() {
+                        currentImage = img;
+                        // Подгоняем размер canvas под изображение
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        generateMeme();
+                    };
+                    img.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Изменение размера шрифта
+        fontSizeSlider.addEventListener('input', function() {
+            fontSizeValue.textContent = this.value + 'px';
+            generateMeme();
+        });
+
+        // Изменение толщины обводки
+        outlineSizeSlider.addEventListener('input', function() {
+            outlineSizeValue.textContent = this.value + 'px';
+            generateMeme();
+        });
+
+        // Обновление мема
+        function generateMeme() {
+            if (!currentImage) return;
+
+            // Очищаем canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Рисуем изображение
+            ctx.drawImage(currentImage, 0, 0, canvas.width, canvas.height);
+
+            // Настройки текста
+            const fontSize = parseInt(fontSizeSlider.value);
+            const fontFamily = fontSelect.value;
+            const textColor = textColorPicker.value;
+            const outlineSize = parseInt(outlineSizeSlider.value);
+
+            ctx.font = `${fontSize}px ${fontFamily}`;
+            ctx.textAlign = 'center';
+
+            // Верхний текст
+            if (topTextInput.value) {
+                ctx.textBaseline = 'top';
+                drawTextWithOutline(
+                    topTextInput.value.toUpperCase(),
+                    canvas.width / 2,
+                    10,
+                    fontSize,
+                    fontFamily,
+                    textColor,
+                    outlineSize
+                );
+            }
+
+            // Нижний текст
+            if (bottomTextInput.value) {
+                ctx.textBaseline = 'bottom';
+                drawTextWithOutline(
+                    bottomTextInput.value.toUpperCase(),
+                    canvas.width / 2,
+                    canvas.height - 10,
+                    fontSize,
+                    fontFamily,
+                    textColor,
+                    outlineSize
+                );
+            }
+        }
+
+        // Рисуем текст с обводкой
+        function drawTextWithOutline(text, x, y, fontSize, fontFamily, textColor, outlineSize) {
+            ctx.font = `${fontSize}px ${fontFamily}`;
+            
+            // Рисуем обводку
+            if (outlineSize > 0) {
+                ctx.strokeStyle = '#000';
+                ctx.lineWidth = outlineSize * 2; // Увеличиваем для лучшей видимости
+                ctx.strokeText(text, x, y);
+            }
+            
+            // Рисуем основной текст
+            ctx.fillStyle = textColor;
+            ctx.fillText(text, x, y);
+        }
+
+        // Установка шаблона
+        function setTemplate(top, bottom) {
+            topTextInput.value = top;
+            bottomTextInput.value = bottom;
+            generateMeme();
+        }
+
+        // Рандомный мем
+        function generateRandomMeme() {
+            if (!currentImage) {
+                alert("Сначала загрузи картинку!");
+                return;
+            }
+            
+            const randomTemplate = memeTemplates[Math.floor(Math.random() * memeTemplates.length)];
+            topTextInput.value = randomTemplate.top;
+            bottomTextInput.value = randomTemplate.bottom;
+            generateMeme();
+        }
+
+        // Сохранение мема
+        function saveMeme() {
+            if (!currentImage) {
+                alert("Сначала загрузи картинку!");
+                return;
+            }
+
+            const link = document.createElement('a');
+            link.download = 'угарный-мем-' + Date.now() + '.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        // Инициализация
+        canvas.width = 500;
+        canvas.height = 500;
+        ctx.fillStyle = '#000';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#fff';
+        ctx.font = '20px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('Загрузите картинку для создания мема', canvas.width/2, canvas.height/2);
+    </script>
+</body>
+</html>
